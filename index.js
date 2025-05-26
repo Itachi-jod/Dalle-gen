@@ -1,5 +1,7 @@
 require('dotenv').config();
-const fetch = require('node-fetch');
+
+// Import node-fetch for CommonJS syntax
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const API_TOKEN = process.env.API_TOKEN;
 
