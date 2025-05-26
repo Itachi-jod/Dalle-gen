@@ -1,29 +1,31 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
+require('dotenv').config();
+const fetch = require('node-fetch');
 
-app.use(express.json());
+const API_TOKEN = process.env.API_TOKEN;
 
-app.get('/generate', async (req, res) => {
-  const prompt = req.query.prompt;
-  if (!prompt) {
-    return res.status(400).json({ error: 'Prompt query parameter is required.' });
-  }
+if (!API_TOKEN) {
+  console.error('API_TOKEN not found in .env file!');
+  process.exit(1);
+}
 
+async function generateImage(prompt) {
   try {
-    const response = await axios.get(`https://dalle-gen.onrender.com/dalle?prompt=${encodeURIComponent(prompt)}`);
-    if (response.data && response.data.url) {
-      // Assuming API returns { url: 'image_link' }
-      return res.json({ image: response.data.url });
-    } else {
-      return res.status(500).json({ error: 'Failed to get image URL from API.' });
-    }
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to generate image. Try again later.' });
-  }
-});
+    const res = await fetch(`https://dalle-gen.onrender.com/dalle?prompt=${encodeURIComponent(prompt)}`, {
+      headers: {
+        Authorization: `Bearer ${API_TOKEN}`
+      }
+    });
+    const data = await res.json();
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    if (data.url) {
+      console.log('Image URL:', data.url);
+    } else {
+      console.error('Failed to generate image:', data);
+    }
+  } catch (err) {
+    console.error('Error calling API:', err);
+  }
+}
+
+// Test with a sample prompt:
+generateImage('a futuristic city at sunset');
