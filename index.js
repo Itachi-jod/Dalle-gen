@@ -1,45 +1,29 @@
 const express = require('express');
 const axios = require('axios');
-const bodyParser = require('body-parser');
-require('dotenv').config();
-
 const app = express();
-app.use(bodyParser.json());
 
-const API_TOKEN = process.env.API_TOKEN;
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Welcome to DALL·E Image Generator API!');
-});
-
-app.post('/generate', async (req, res) => {
-  const prompt = req.body.prompt;
+app.get('/generate', async (req, res) => {
+  const prompt = req.query.prompt;
   if (!prompt) {
-    return res.status(400).json({ error: 'Prompt is required' });
+    return res.status(400).json({ error: 'Prompt query parameter is required.' });
   }
 
   try {
-    const response = await axios.post(
-      'https://api-inference.huggingface.co/models/prompthero/openjourney',
-      { inputs: prompt },
-      {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`
-        },
-        responseType: 'arraybuffer'
-      }
-    );
-
-    const imageBuffer = Buffer.from(response.data, 'binary');
-    res.set('Content-Type', 'image/png');
-    res.send(imageBuffer);
+    const response = await axios.get(`https://dalle-gen.onrender.com/dalle?prompt=${encodeURIComponent(prompt)}`);
+    if (response.data && response.data.url) {
+      // Assuming API returns { url: 'image_link' }
+      return res.json({ image: response.data.url });
+    } else {
+      return res.status(500).json({ error: 'Failed to get image URL from API.' });
+    }
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: 'Failed to generate image' });
+    return res.status(500).json({ error: 'Failed to generate image. Try again later.' });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`DALL·E API is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
