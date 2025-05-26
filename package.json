@@ -1,15 +1,25 @@
 {
-  "name": "dalle-api",
+  "name": "dalle-image-api",
   "version": "1.0.0",
-  "description": "DALL·E style AI image generation API",
+  "description": "A simple API that generates images using AI (DALL·E style)",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "keywords": [
+    "dalle",
+    "image",
+    "ai",
+    "generation",
+    "openai",
+    "api"
+  ],
   "author": "Lord Itachi",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2"
   }
 }
