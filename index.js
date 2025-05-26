@@ -3,30 +3,30 @@ const fetch = require('node-fetch');
 
 const API_TOKEN = process.env.API_TOKEN;
 
-module.exports = {
-  name: "dalle",
-  description: "Generate AI images from a prompt",
-  async execute(messenger, message, args) {
-    const prompt = args.join(" ");
-    if (!prompt) return messenger.sendMessage("❌ Please provide a prompt for the image.");
+if (!API_TOKEN) {
+  console.error('API_TOKEN not found in .env file!');
+  process.exit(1);
+}
 
-    try {
-      const res = await fetch(`https://dalle-gen.onrender.com/dalle?prompt=${encodeURIComponent(prompt)}`, {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`
-        }
-      });
-      const data = await res.json();
-
-      if (data.url) {
-        await messenger.sendMessage(`🖼️ Here is your image for: "${prompt}"`);
-        await messenger.sendMessage({ attachment: { type: "image", payload: { url: data.url } } });
-      } else {
-        await messenger.sendMessage("❌ Failed to generate image. Try again later.");
+async function generateImage(prompt) {
+  try {
+    const response = await fetch(`https://dalle-gen.onrender.com/dalle?prompt=${encodeURIComponent(prompt)}`, {
+      headers: {
+        Authorization: `Bearer ${API_TOKEN}`
       }
-    } catch (err) {
-      await messenger.sendMessage("❌ Error generating image. Please try again.");
-      console.error("DALL·E API error:", err);
+    });
+
+    const data = await response.json();
+
+    if (data.url) {
+      console.log('Image URL:', data.url);
+    } else {
+      console.error('Failed to generate image:', data);
     }
+  } catch (error) {
+    console.error('Error calling API:', error);
   }
-};
+}
+
+// Test prompt
+generateImage('a futuristic city at sunset');
