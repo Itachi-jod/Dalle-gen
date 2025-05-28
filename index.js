@@ -1,22 +1,26 @@
-import { generateImage } from "./dalle.js";
-import fs from "fs";
-import axios from "axios";
+require('dotenv').config();
+const express = require('express');
+const { Dalle } = require('dalle-node');
+const app = express();
 
-const prompt = "a futuristic city under the stars, digital art";
+app.use(express.json());
 
-// Generate and download image
-(async () => {
-  const imageUrl = await generateImage(prompt);
+const dalle = new Dalle({
+  apiKey: process.env.DALLE_API_KEY
+});
 
-  if (!imageUrl) {
-    console.log("❌ Failed to generate image.");
-    return;
+app.post('/generate', async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt) return res.status(400).json({ error: 'Prompt required!' });
+
+  try {
+    const image = await dalle.generate(prompt);
+    res.json({ image });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Image generation failed.' });
   }
+});
 
-  const filePath = `./${Date.now()}.jpg`;
-  const image = await axios.get(imageUrl, { responseType: 'stream' });
-  const writer = fs.createWriteStream(filePath);
-
-  image.data.pipe(writer);
-  writer.on("finish", () => console.log(`✅ Image saved as ${filePath}`));
-})();
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`⚡ Server running on port ${PORT}`));
