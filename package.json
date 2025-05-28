@@ -1,15 +1,16 @@
 {
   "name": "dalle-image-generator",
   "version": "1.0.0",
-  "description": "Generate AI images using DALL·E",
+  "description": "Generate AI images using OpenAI's DALL·E",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "dalle-node": "^2.0.2",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "openai": "^4.0.0"
   },
-  "author": "Lord Itachi"
+  "author": "Lord Itachi",
+  "license": "MIT"
 }
