@@ -1,14 +1,15 @@
 {
   "name": "dalle-image-generator",
   "version": "1.0.0",
-  "description": "Generate images using DALL·E API",
+  "description": "Generate AI images using DALL·E",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "dalle-node": "^2.0.3",
-    "dotenv": "^16.0.3"
-  }
+    "dalle-node": "^2.0.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "author": "Lord Itachi"
 }
