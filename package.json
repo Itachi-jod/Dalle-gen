@@ -1,15 +1,14 @@
 {
-  "name": "dalle-bot",
+  "name": "dalle-image-generator",
   "version": "1.0.0",
-  "description": "AI image generation bot using dalle-gen API",
+  "description": "Generate images using DALL·E API",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Lord Itachi",
-  "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.3",
-    "node-fetch": "^3.3.1"
+    "dalle-node": "^2.0.3",
+    "dotenv": "^16.0.3"
   }
 }
