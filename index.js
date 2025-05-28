@@ -1,34 +1,22 @@
-require('dotenv').config();
+import { generateImage } from "./dalle.js";
+import fs from "fs";
+import axios from "axios";
 
-// Import node-fetch for CommonJS syntax
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const prompt = "a futuristic city under the stars, digital art";
 
-const API_TOKEN = process.env.API_TOKEN;
+// Generate and download image
+(async () => {
+  const imageUrl = await generateImage(prompt);
 
-if (!API_TOKEN) {
-  console.error('API_TOKEN not found in .env file!');
-  process.exit(1);
-}
-
-async function generateImage(prompt) {
-  try {
-    const response = await fetch(`https://dalle-gen.onrender.com/dalle?prompt=${encodeURIComponent(prompt)}`, {
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`
-      }
-    });
-
-    const data = await response.json();
-
-    if (data.url) {
-      console.log('Image URL:', data.url);
-    } else {
-      console.error('Failed to generate image:', data);
-    }
-  } catch (error) {
-    console.error('Error calling API:', error);
+  if (!imageUrl) {
+    console.log("❌ Failed to generate image.");
+    return;
   }
-}
 
-// Test prompt
-generateImage('a futuristic city at sunset');
+  const filePath = `./${Date.now()}.jpg`;
+  const image = await axios.get(imageUrl, { responseType: 'stream' });
+  const writer = fs.createWriteStream(filePath);
+
+  image.data.pipe(writer);
+  writer.on("finish", () => console.log(`✅ Image saved as ${filePath}`));
+})();
